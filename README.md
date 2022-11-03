@@ -1,6 +1,6 @@
 # Spring Boot Process Engine and Business Data
 
-This example project shows how to configure an Spring boot application using to two 
+This example project shows how to configure a Spring boot application using two 
 separated data sources. One data source serves the business data, the second one serves 
 the process engine tables.
 
@@ -30,21 +30,22 @@ to combine the common data source configuration attributes with the Hikari conne
 The configuration is in the `com.camunda.consulting.two_ds.configuration.TwoDatasourcesConfiguration` class, adopted from
 [this Spring boot Howto document](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto.data-access.configure-two-datasources).
 
-The customer data source has the `@Primary` annotation on both methods.
+The Customer data source has the `@Primary` annotation on both methods.
 
 ## The Camunda Engine
 
-A simple process with two service tasks is used to add data to the customer database. 
-The name is given when the process instance starts. A Service task with a Delegate expression 
+A simple process diagram with two service tasks is used to add data to the customer database. 
+The name is given when the process instance starts. A service task with a Delegate expression 
 creates a new customer in the database. If an error is forced, the second service task throws 
 an exception to roll back the customer from the database.
 
-The data source is configured in the `com.camunda.consulting.two_ds.configuration.TwoDatasourcesConfiguration` 
+The data source for the process engine is configured in the
+`com.camunda.consulting.two_ds.configuration.TwoDatasourcesConfiguration` 
 class, too. It uses the same pattern as the primary customer data source, with two differences:
 1. No `@Primary` annotation
 2. The `camundaDataSource` Bean is qualified with the `camundaDataSourceProperties` to separate the setup.
 
-The bean name is [documented here](https://docs.camunda.org/manual/7.18/user-guide/spring-boot-integration/configuration/#defaultdatasourceconfiguration)
+The bean name is [documented here](https://docs.camunda.org/manual/7.18/user-guide/spring-boot-integration/configuration/#defaultdatasourceconfiguration).
 
 ## Successful configuration
 
@@ -54,7 +55,7 @@ This line from the console output shows a successful configuration of the two da
 INFO 35076 --- [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Databases available at 'jdbc:h2:./customer-db1', 'jdbc:h2:./camunda-db2'
 ```
 
-If you see only a single database here, something in the configuration is missing. 
+If you see only a single database here, something in the configuration is wrong. 
 I stumbled over the missing `@Qualifier` on the beans.
 
 
