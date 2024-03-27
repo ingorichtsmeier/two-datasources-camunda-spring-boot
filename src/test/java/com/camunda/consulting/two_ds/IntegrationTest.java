@@ -1,10 +1,9 @@
 package com.camunda.consulting.two_ds;
 
 import static org.assertj.core.api.Assertions.*;
-
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +33,9 @@ public class IntegrationTest {
   @Test
   public void writeAndReadData() {
     Customer customer = new Customer("vor", "nach");
+    Long customerId = null;
     try {
-      repository.save(customer);
+      customerId = repository.save(customer).getId();
     } catch (Exception e) {
       e.printStackTrace();
       fail("Exception create occured");
@@ -44,11 +44,35 @@ public class IntegrationTest {
     try {
       List<Customer> customerList = repository.findByLastName("nach");
       assertThat(customerList).isNotNull();
+//      assertThat(customerList).hasSize(1);
       assertThat(customerList.get(0).getFirstName()).isEqualTo("vor");
     } catch (Exception e) {
       e.printStackTrace();
       fail("exception read occured");
     }
+    
+    try {
+      customer = repository.findById(customerId).get();
+      customer.setLastName(customer.getLastName() + " nach");
+      repository.save(customer);
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("exception update occured");
+    }
+  }
+  
+  @Test
+  public void updateByProcess() throws InterruptedException {
+    Customer customer = new Customer("procVor", "procNach");
+    Long customerId = repository.save(customer).getId();
+    
+    runtimeService.startProcessInstanceByKey("updateProcess", Map.of("customerId", customerId));
+    
+    Thread.sleep(Duration.ofSeconds(3));
+    
+    Customer customerChanged = repository.findById(customerId).get();
+    
+    assertThat(customerChanged.getFirstName()).endsWith("vor vor");
   }
   
 }

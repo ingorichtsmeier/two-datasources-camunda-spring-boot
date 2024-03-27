@@ -58,6 +58,34 @@ INFO 35076 --- [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 c
 If you see only a single database here, something in the configuration is wrong. 
 I stumbled over the missing `@Qualifier` on the beans.
 
+## Optimistic Locking Exception (cannot reproduce)
+
+To rebuild the `OptimisticLockingException`, a new process with another delegate is added.
+
+The UpdateCustomerDelegate reads the customer with the given ID, appends some characters to the firstname and saves the customer to the database.
+
+The process calls the delegate two times after an async continuation on the start event.
+
+In the log from the Integration test, you can see that the customer object is updated with a single update statement when the process instance and the transaction ends.
+
+```
+ INFO 25474 --- [aTaskExecutor-1] c.c.c.t.tasks.UpdateCustomerDelegate     : Enter update
+DEBUG 25474 --- [aTaskExecutor-1] org.hibernate.SQL                        : select customer0_.id as id1_0_0_, customer0_.first_name as first_na2_0_0_, customer0_.last_name as last_nam3_0_0_, customer0_.rom customer customer0_ where customer0_.id=?
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [BIGINT] - [387]
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicExtractor   : extracted value ([first_na2_0_0_] : [VARCHAR]) - [procVor]
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicExtractor   : extracted value ([last_nam3_0_0_] : [VARCHAR]) - [procNach]
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicExtractor   : extracted value ([ol_ver4_0_0_] : [BIGINT]) - [0]
+ INFO 25474 --- [aTaskExecutor-1] c.c.c.t.tasks.UpdateCustomerDelegate     : End update
+ INFO 25474 --- [aTaskExecutor-1] c.c.c.t.tasks.UpdateCustomerDelegate     : Enter update
+ INFO 25474 --- [aTaskExecutor-1] c.c.c.t.tasks.UpdateCustomerDelegate     : End update
+DEBUG 25474 --- [aTaskExecutor-1] org.hibernate.SQL                        : update customer set first_name=?, last_name=?, ol_ver=? where id=? and ol_ver=?
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [VARCHAR] - [procVor vor vor]
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicBinder      : binding parameter [2] as [VARCHAR] - [procNach]
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicBinder      : binding parameter [3] as [BIGINT] - [1]
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicBinder      : binding parameter [4] as [BIGINT] - [387]
+TRACE 25474 --- [aTaskExecutor-1] o.h.type.descriptor.sql.BasicBinder      : binding parameter [5] as [BIGINT] - [0]
+```
+
 
 ## More resources
 
