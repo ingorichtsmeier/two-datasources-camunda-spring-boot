@@ -1,7 +1,6 @@
 package com.camunda.consulting.two_ds;
 
 import static org.assertj.core.api.Assertions.*;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import org.camunda.bpm.engine.RuntimeService;
@@ -68,7 +67,7 @@ public class IntegrationTest {
     
     runtimeService.startProcessInstanceByKey("updateProcess", Map.of("customerId", customerId));
     
-    Thread.sleep(Duration.ofSeconds(3));
+    Thread.sleep(3000L);
     
     Customer customerChanged = repository.findById(customerId).get();
     

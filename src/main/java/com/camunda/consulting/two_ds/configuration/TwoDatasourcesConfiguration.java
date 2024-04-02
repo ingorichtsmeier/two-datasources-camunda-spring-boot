@@ -1,49 +1,49 @@
-package com.camunda.consulting.two_ds.configuration;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import com.zaxxer.hikari.HikariDataSource;
-
-@Configuration(proxyBeanMethods = false)
-public class TwoDatasourcesConfiguration {
-  
-  private static final Logger LOG = LoggerFactory.getLogger(TwoDatasourcesConfiguration.class);
-
-	@Bean
-	@Primary
-	@ConfigurationProperties(prefix = "customer.datasource")
-	public DataSourceProperties customerDataSourceProperties() {
-    return new DataSourceProperties();
-	}
-
-  @Bean
-  @Primary
-  @ConfigurationProperties("customer.datasource.configuration")
-  public HikariDataSource customerDataSource(DataSourceProperties properties) {
-    LOG.info("create customer datasource");
-    return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
-  }
-  
-  @Bean
-  @ConfigurationProperties(prefix = "camunda-bpm.datasource")
-  public DataSourceProperties camundaDataSourceProperties() {
-    return new DataSourceProperties();
-  }
-  
-  @Bean("camundaBpmDataSource")
-  @ConfigurationProperties(prefix = "camunda-bpm.datasource.configuration")
-  public HikariDataSource camundaDataSource(@Qualifier("camundaDataSourceProperties") DataSourceProperties properties) {	  
-    LOG.info("create camunda datasource");
-    return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
-  }
-  
-}
+//package com.camunda.consulting.two_ds.configuration;
+//
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.beans.factory.annotation.Qualifier;
+//import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+//import org.springframework.boot.context.properties.ConfigurationProperties;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.context.annotation.Primary;
+//import com.zaxxer.hikari.HikariDataSource;
+//
+//@Configuration(proxyBeanMethods = false)
+//public class TwoDatasourcesConfiguration {
+//  
+//  private static final Logger LOG = LoggerFactory.getLogger(TwoDatasourcesConfiguration.class);
+//
+//	@Bean
+//	@Primary
+//	@ConfigurationProperties(prefix = "customer.datasource")
+//	public DataSourceProperties customerDataSourceProperties() {
+//    return new DataSourceProperties();
+//	}
+//
+//  @Bean
+//  @Primary
+//  @ConfigurationProperties("customer.datasource.configuration")
+//  public HikariDataSource customerDataSource(DataSourceProperties properties) {
+//    LOG.info("create customer datasource");
+//    return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+//  }
+//  
+//  @Bean
+//  @ConfigurationProperties(prefix = "camunda-bpm.datasource")
+//  public DataSourceProperties camundaDataSourceProperties() {
+//    return new DataSourceProperties();
+//  }
+//  
+//  @Bean("camundaBpmDataSource")
+//  @ConfigurationProperties(prefix = "camunda-bpm.datasource.configuration")
+//  public HikariDataSource camundaDataSource(@Qualifier("camundaDataSourceProperties") DataSourceProperties properties) {	  
+//    LOG.info("create camunda datasource");
+//    return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+//  }
+//  
+//}
 
 /*
 
